@@ -1,0 +1,15 @@
+{
+  "op": "config.set",
+  "name": "status_command",
+  "value": {
+    "type": "skill",
+    "name": "status_command",
+    "state": "enabled",
+    "config": {
+      "description": "Check overall status of all systems (trading bot, project dashboard, LinkedIn metrics)",
+      "priority": "high",
+      "triggers": ["/status", "status"],
+      "examples": ["What's the status?", "Check system status"]
+    }
+  }
+}
