@@ -1,0 +1,490 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billy's Recursive Improvement Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+            border-bottom: 2px solid #333;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            color: #00bcd4;
+        }
+
+        header .subtitle {
+            color: #888;
+            margin-top: 10px;
+        }
+
+        section {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        section h2 {
+            color: #00bcd4;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: #383838;
+            padding: 20px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid #444;
+        }
+
+        .stat-card h3 {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00bcd4;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .data-table th {
+            background: #383838;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #888;
+            border-bottom: 2px solid #444;
+        }
+
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid #383838;
+        }
+
+        .data-table tr:hover {
+            background: #383838;
+        }
+
+        .outcome-success {
+            color: #4caf50;
+            font-weight: 600;
+        }
+
+        .outcome-failure {
+            color: #f44336;
+            font-weight: 600;
+        }
+
+        .outcome-user_correction {
+            color: #ff9800;
+            font-weight: 600;
+        }
+
+        .rate-high {
+            color: #4caf50;
+            font-weight: 600;
+        }
+
+        .rate-medium {
+            color: #ff9800;
+            font-weight: 600;
+        }
+
+        .rate-low {
+            color: #f44336;
+            font-weight: 600;
+        }
+
+        .severity-high {
+            color: #f44336;
+            font-weight: 600;
+        }
+
+        .severity-medium {
+            color: #ff9800;
+            font-weight: 600;
+        }
+
+        .severity-low {
+            color: #4caf50;
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .badge.promoted {
+            background: #4caf50;
+            color: white;
+        }
+
+        .timestamp {
+            color: #888;
+            font-size: 0.9em;
+            font-family: monospace;
+        }
+
+        .type {
+            color: #00bcd4;
+            font-weight: 500;
+        }
+
+        .action {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .category {
+            color: #00bcd4;
+            font-weight: 500;
+        }
+
+        .footer {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Billy's Recursive Improvement Tracker</h1>
+            <div class="subtitle">
+                Tracking decisions, detecting patterns, learning from outcomes<br>
+                Last updated: 2026-02-14 18:29:09
+            </div>
+        </header>
+
+        
+    <section class="stats-section">
+        <h2>Overview</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Decisions</h3>
+                <div class="stat-value">17</div>
+            </div>
+            <div class="stat-card">
+                <h3>Success Rate</h3>
+                <div class="stat-value">94.1%</div>
+            </div>
+            <div class="stat-card">
+                <h3>Avg Resolution Time</h3>
+                <div class="stat-value">79.6s</div>
+            </div>
+            <div class="stat-card">
+                <h3>Frustration Rate</h3>
+                <div class="stat-value">0.0%</div>
+            </div>
+            <div class="stat-card">
+                <h3>Projects</h3>
+                <div class="stat-value">1</div>
+            </div>
+            <div class="stat-card">
+                <h3>Sessions</h3>
+                <div class="stat-value">8</div>
+            </div>
+        </div>
+    </section>
+    
+        
+    <section class="trend-section">
+        <h2>Success Trend (Last 7 Days)</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Success</th>
+                    <th>Success Rate</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td>2026-02-14</td>
+            <td>17</td>
+            <td>16</td>
+            <td class="rate-high">94.1%</td>
+        </tr>
+        
+            </tbody>
+        </table>
+    </section>
+    
+        
+    <section class="decisions-section">
+        <h2>Recent Decisions</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Type</th>
+                    <th>Action</th>
+                    <th>Outcome</th>
+                    <th>Guidance</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td class="timestamp">2026-02-14T17:29:27</td>
+            <td class="type">communication</td>
+            <td class="action">Responded to user with status update...</td>
+            <td class="outcome-success">success</td>
+            <td>global_claude_md</td>
+        </tr>
+        
+        <tr>
+            <td class="timestamp">2026-02-14T17:29:27</td>
+            <td class="type">verification</td>
+            <td class="action">Checked test output to confirm success...</td>
+            <td class="outcome-success">success</td>
+            <td>none</td>
+        </tr>
+        
+        <tr>
+            <td class="timestamp">2026-02-14T17:29:27</td>
+            <td class="type">verification</td>
+            <td class="action">Read file after modification to verify...</td>
+            <td class="outcome-success">success</td>
+            <td>global_claude_md</td>
+        </tr>
+        
+        <tr>
+            <td class="timestamp">2026-02-14T17:29:26</td>
+            <td class="type">approach</td>
+            <td class="action">Implemented database-first design...</td>
+            <td class="outcome-success">success</td>
+            <td>design_md</td>
+        </tr>
+        
+        <tr>
+            <td class="timestamp">2026-02-14T17:29:26</td>
+            <td class="type">approach</td>
+            <td class="action">Used pattern matching for frustration detection...</td>
+            <td class="outcome-success">success</td>
+            <td>design_md</td>
+        </tr>
+        
+        <tr>
+            <td class="timestamp">2026-02-14T17:29:26</td>
+            <td class="type">tool_choice</td>
+            <td class="action">Used read tool to verify file contents...</td>
+            <td class="outcome-success">success</td>
+            <td>lessons_md</td>
+        </tr>
+        
+        <tr>
+            <td class="timestamp">2026-02-14T17:29:26</td>
+            <td class="type">tool_choice</td>
+            <td class="action">Selected exec tool for running tests...</td>
+            <td class="outcome-success">success</td>
+            <td>global_claude_md</td>
+        </tr>
+        
+        <tr>
+            <td class="timestamp">2026-02-14T17:29:26</td>
+            <td class="type">file_modification</td>
+            <td class="action">Created new Python script for automation...</td>
+            <td class="outcome-success">success</td>
+            <td>global_claude_md</td>
+        </tr>
+        
+        <tr>
+            <td class="timestamp">2026-02-14T17:29:26</td>
+            <td class="type">file_modification</td>
+            <td class="action">Edited HTML file to fix broken links...</td>
+            <td class="outcome-failure">failure</td>
+            <td>none</td>
+        </tr>
+        
+        <tr>
+            <td class="timestamp">2026-02-14T17:29:26</td>
+            <td class="type">file_modification</td>
+            <td class="action">Updated README.md with new instructions...</td>
+            <td class="outcome-success">success</td>
+            <td>global_claude_md</td>
+        </tr>
+        
+        <tr>
+            <td class="timestamp">2026-02-14T17:28:03</td>
+            <td class="type">approach</td>
+            <td class="action">Built Billy Byte Recursive Improvement Tracker - Phase 1 com...</td>
+            <td class="outcome-success">success</td>
+            <td>global_claude_md</td>
+        </tr>
+        
+        <tr>
+            <td class="timestamp">2026-02-14T17:27:13</td>
+            <td class="type">file_modification</td>
+            <td class="action">Test: Created test file...</td>
+            <td class="outcome-success">success</td>
+            <td>global_claude_md</td>
+        </tr>
+        
+        <tr>
+            <td class="timestamp">2026-02-14T17:27:13</td>
+            <td class="type">file_modification</td>
+            <td class="action">Test: Created test file...</td>
+            <td class="outcome-success">success</td>
+            <td>global_claude_md</td>
+        </tr>
+        
+        <tr>
+            <td class="timestamp">2026-02-14T17:27:05</td>
+            <td class="type">file_modification</td>
+            <td class="action">Test: Created test file...</td>
+            <td class="outcome-success">success</td>
+            <td>global_claude_md</td>
+        </tr>
+        
+        <tr>
+            <td class="timestamp">2026-02-14T17:27:05</td>
+            <td class="type">file_modification</td>
+            <td class="action">Test: Created test file...</td>
+            <td class="outcome-success">success</td>
+            <td>global_claude_md</td>
+        </tr>
+        
+        <tr>
+            <td class="timestamp">2026-02-14T17:26:59</td>
+            <td class="type">file_modification</td>
+            <td class="action">Test: Created test file...</td>
+            <td class="outcome-success">success</td>
+            <td>global_claude_md</td>
+        </tr>
+        
+        <tr>
+            <td class="timestamp">2026-02-14T17:26:59</td>
+            <td class="type">file_modification</td>
+            <td class="action">Test: Created test file...</td>
+            <td class="outcome-success">success</td>
+            <td>global_claude_md</td>
+        </tr>
+        
+            </tbody>
+        </table>
+    </section>
+    
+        
+    <section class="patterns-section">
+        <h2>Detected Patterns</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Pattern</th>
+                    <th>Type</th>
+                    <th>Occurrences</th>
+                    <th>Severity</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td class="pattern-name">Test: Created Test File</td>
+            <td class="pattern-type">success_pattern</td>
+            <td class="pattern-count">36</td>
+            <td class="severity-low">low</td>
+            <td></td>
+        </tr>
+        
+            </tbody>
+        </table>
+    </section>
+    
+        
+    <section class="lessons-section">
+        <h2>Lessons by Category</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Lessons</th>
+                    <th>High Severity</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td class="category">general</td>
+            <td class="count">3</td>
+            <td class="high-severity">33%</td>
+        </tr>
+        
+        <tr>
+            <td class="category">verification</td>
+            <td class="count">2</td>
+            <td class="high-severity">50%</td>
+        </tr>
+        
+        <tr>
+            <td class="category">communication</td>
+            <td class="count">1</td>
+            <td class="high-severity">0%</td>
+        </tr>
+        
+            </tbody>
+        </table>
+    </section>
+    
+
+        <div class="footer">
+            <p>Billy Byte's Recursive Improvement Tracker | Version 0.1.0</p>
+        </div>
+    </div>
+</body>
+</html>
+    

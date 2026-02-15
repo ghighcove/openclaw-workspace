@@ -1,0 +1,29 @@
+{
+  "start_date": "2026-02-14T17:44:28.450128",
+  "last_analysis": "2026-02-14T17:44:34.640335",
+  "phase": "initial",
+  "analysis_count": 1,
+  "phases": {
+    "initial": {
+      "name": "Initial",
+      "start": "2026-02-14T17:44:28.450128",
+      "end": null,
+      "interval_hours": 2,
+      "description": "First few days - every 2 hours"
+    },
+    "weekly": {
+      "name": "Weekly",
+      "start": null,
+      "end": null,
+      "interval_hours": 24,
+      "description": "After first week - every day"
+    },
+    "calibrated": {
+      "name": "Calibrated",
+      "start": null,
+      "end": null,
+      "interval_hours": null,
+      "description": "Based on data volume and patterns"
+    }
+  }
+}
