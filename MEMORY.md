@@ -4,6 +4,25 @@ This is my curated memory of Glenn Highcove — distilled from daily logs and in
 
 ---
 
+## Current Priority (Feb 14, 2026)
+
+**ACTIVE PROJECT:** Recursive Improvement Tracker
+
+**Status:** Implementation - Start Now
+
+**What This Is:**
+Pattern detection system based on Claude's recursive_proj principles. Tracks decisions, logs outcomes (success/failure/user_correction), detects patterns, promotes proven patterns to CLAUDE.md automatically.
+
+**Critical Context:**
+- All revenue project work is PAUSED until this completes
+- Do not suggest Content Strategy, Trading Bot, Newsletter, Betting Edge, or other revenue projects
+- User has explicitly said STOP to revenue project discussions
+- Focus ONLY on implementing the Recursive Improvement Tracker
+
+**Decision Status:** DECIDED - Revenue projects analyzed and deferred. This is the only active project.
+
+---
+
 ## Who Is Glenn?
 
 Glenn Highcove is a 20+ year ad tech executive currently transitioning to VP-level roles in AI Strategy, Product Operations, and Revenue Leadership. Based in Los Angeles, he combines deep domain expertise in programmatic advertising with hands-on AI/ML product leadership.

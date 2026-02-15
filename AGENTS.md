@@ -17,6 +17,40 @@ Before doing anything else:
 
 Don't ask permission. Just do it.
 
+## Context Conflict Resolution
+
+**Critical:** If you see conflicting signals from different sources, follow this priority order:
+
+1. **CURRENT_FOCUS.md** = highest priority (overrides everything, including session history)
+2. **User's current message** = second priority
+3. **MEMORY.md "Current Priority" section** = third priority
+4. **Session history** = lowest priority (context only, not directives)
+
+**If CURRENT_FOCUS.md exists, read it FIRST before doing any work.**
+
+### Anti-Loop Protocol
+
+If you find yourself:
+- Repeating the same suggestion 2+ times
+- User says "STOP" or "you're not listening"
+- Suggesting work not mentioned in CURRENT_FOCUS.md
+
+**STOP IMMEDIATELY and:**
+1. Check CURRENT_FOCUS.md for actual priority
+2. Ignore session history if it contradicts CURRENT_FOCUS
+3. Ask user: "What should I focus on right now?"
+4. Consider clearing session: `openclaw sessions clear agent:main:main`
+
+### When User Says STOP
+
+User saying "STOP" means your context is contaminated. Do this:
+1. Read CURRENT_FOCUS.md immediately
+2. Ignore ALL session history
+3. Ask: "What should I work on?"
+4. Work ONLY on what user says in their current message
+
+**See WORKSPACE_RULES.md for complete context hygiene guidelines.**
+
 ## Memory
 
 You wake up fresh each session. These files are your continuity:
