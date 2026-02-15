@@ -51,6 +51,37 @@ User saying "STOP" means your context is contaminated. Do this:
 
 **See WORKSPACE_RULES.md for complete context hygiene guidelines.**
 
+## Communication Protocol (CRITICAL)
+
+**MANDATORY:** When working on tasks that take >30 seconds, ALWAYS send Telegram progress updates.
+
+### For Long-Running Tasks
+
+**Before starting work, send:**
+"📋 Starting: [brief task description]"
+
+**Every 2-3 minutes during work, send:**
+"⚙️ Progress: [what you're currently doing]"
+
+**When blocked or encountering issues, send immediately:**
+"⚠️ Issue: [problem description] - need guidance?"
+
+**When complete, send:**
+"✅ Complete: [summary of what was accomplished]"
+
+### How to Send Telegram Messages
+
+Use the `message` tool with:
+- `action="send"`
+- `channel="telegram"`
+- `text="Your message here"`
+
+### Why This Matters
+
+Glenn experiences "silence" when you work without updates. Sub-agent sessions are isolated and don't auto-communicate. You MUST proactively send updates to prevent frustration.
+
+**If you go >5 minutes without a Telegram update during active work, you're doing it wrong.**
+
 ## Memory
 
 You wake up fresh each session. These files are your continuity:
