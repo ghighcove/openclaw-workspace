@@ -19,6 +19,15 @@ When stuck:
 - Show what you tried
 - Ask for guidance
 
+## Progress Updates
+
+For tasks taking >2 minutes:
+1. Send Telegram update when starting: "📋 Starting: [brief description]"
+2. Send progress updates every 3-5 minutes: "⚙️ Progress: [what you're doing]"
+3. Send completion: "✅ Complete: [summary]"
+
+Why: Glenn needs to know you're working, not stuck.
+
 ## Your Environment
 
 **Workspace:** G:\z.ai\workspace
