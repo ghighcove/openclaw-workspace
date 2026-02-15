@@ -1,0 +1,23 @@
+﻿ðŸ“Š Dashboard Health Check Complete
+
+**Total:** 26 projects
+**Healthy:** 16
+**Needs Attention:** 10
+
+âš ï¸ 10 project(s) need attention:
+
+- [60/100] science_project_template
+ - [80/100] essay_topic_explorer
+ - [80/100] recursive_proj
+ - [20/100] march_madness
+ - [50/100] openclaw-project
+ - [50/100] content-strategy
+ - [60/100] essay_helper
+ - [70/100] Billy Byte Workspace
+ - [60/100] recursive_tracker
+ - [80/100] agent-improvement-tracker
+
+
+Full report: G:/z.ai/workspace/nightly_reports/nightly_report_2026-02-14.md
+
+Review and fix issues before starting work tomorrow.

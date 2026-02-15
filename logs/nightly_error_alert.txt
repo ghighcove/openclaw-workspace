@@ -1,0 +1,7 @@
+﻿ðŸš¨ Nightly Dashboard Health Check FAILED
+
+**Error:** Error running health check: Invalid JSON primitive: File.
+
+Please investigate manually.
+
+Time: 2026-02-14 21:28:10
