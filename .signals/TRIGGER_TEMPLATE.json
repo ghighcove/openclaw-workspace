@@ -1,0 +1,11 @@
+{
+  "batch_id": 1,
+  "season": 2020,
+  "date_range": {
+    "start": "2019-11-01",
+    "end": "2020-03-31"
+  },
+  "expected_rows_range": [500, 1000],
+  "rate_limit_seconds": 1,
+  "instructions": "Collect all NCAA Division I men's basketball games for the 2020 season"
+}

@@ -1,0 +1,18 @@
+{
+  "alert_id": "38A1780B",
+  "priority": "MEDIUM",
+  "category": "fyi",
+  "subject": "Billy Monitor Test",
+  "message": "Testing Billy alert detection and Telegram forwarding",
+  "requires_response": false,
+  "deadline": "2026-02-17T14:00:40.884770",
+  "deadline_minutes": 1440,
+  "conversation_id": "38A1780B",
+  "status": "acknowledged",
+  "created_at": "2026-02-16T14:00:40.884770",
+  "acknowledged_at": "2026-02-16T14:00:48.640774",
+  "responded_at": null,
+  "resolved_at": null,
+  "escalation_count": 0,
+  "conversation_thread": []
+}

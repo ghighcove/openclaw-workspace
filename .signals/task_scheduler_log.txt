@@ -1,0 +1,32 @@
+﻿[2026-02-15 00:06:43] === Git Status Monitor Task Scheduler Setup ===
+[2026-02-15 00:06:43] Task Name: Billy-GitStatusMonitor
+[2026-02-15 00:06:43] Monitor Script: G:/ai/openclaw-workspace/automation/git_status_monitor.ps1
+[2026-02-15 00:06:43] Schedule: Daily at 6:00 AM
+[2026-02-15 00:06:43] 
+[2026-02-15 00:06:44] Creating scheduled task...
+[2026-02-15 00:06:44] Task 'Billy-GitStatusMonitor' created successfully
+[2026-02-15 00:06:45] 
+[2026-02-15 00:06:45] === Task Verification ===
+[2026-02-15 00:06:45] Task Name: Billy-GitStatusMonitor
+[2026-02-15 00:06:45] State: Ready
+[2026-02-15 00:06:45] Description: Billy's Git Status Monitor - Daily 6 AM check for uncommitted changes and stale projects
+[2026-02-15 00:06:45] 
+[2026-02-15 00:06:45] Next scheduled run: 2026-02-15T06:00:00-08:00
+[2026-02-15 00:06:45] 
+[2026-02-15 00:06:45] === Setup Complete ===
+[2026-02-15 00:06:45] 
+[2026-02-15 00:06:45] The task is now configured to run:
+[2026-02-15 00:06:45]   - Frequency: Daily
+[2026-02-15 00:06:45]   - Time: 6:00 AM
+[2026-02-15 00:06:45]   - Output: G:/ai/openclaw-workspace/.signals/morning_summary.md
+[2026-02-15 00:06:45]   - Log: G:/ai/openclaw-workspace/.signals/task_scheduler_log.txt
+[2026-02-15 00:06:45] 
+[2026-02-15 00:06:45] To manually test the task now:
+[2026-02-15 00:06:45]   Start-ScheduledTask -TaskName "Billy-GitStatusMonitor"
+[2026-02-15 00:06:45] 
+[2026-02-15 00:06:45] To view task history:
+[2026-02-15 00:06:45]   Get-ScheduledTaskInfo -TaskName "Billy-GitStatusMonitor"
+[2026-02-15 00:06:45] 
+[2026-02-15 00:06:45] To uninstall:
+[2026-02-15 00:06:45]   Unregister-ScheduledTask -TaskName "Billy-GitStatusMonitor" -Confirm:$false
+[2026-02-15 00:06:45] 

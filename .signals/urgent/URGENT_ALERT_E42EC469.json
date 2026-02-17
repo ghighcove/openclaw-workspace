@@ -1,0 +1,18 @@
+{
+  "alert_id": "E42EC469",
+  "priority": "MEDIUM",
+  "category": "clarification",
+  "subject": "BillyMode Test: Which color scheme?",
+  "message": "Testing BillyMode end-to-end communication.\n\nFor the urgent alert system dashboard we could build, which color scheme do you prefer?\n\nOption A: Red/Orange/Green (traffic light style)\nOption B: Blue/Purple/Cyan (cool tones)\nOption C: System default (whatever looks good)\n\nThis is just a test to verify the communication flow works.",
+  "requires_response": true,
+  "deadline": "2026-02-16T16:09:29.068364",
+  "deadline_minutes": 60,
+  "conversation_id": "E42EC469",
+  "status": "pending",
+  "created_at": "2026-02-16T15:09:29.068364",
+  "acknowledged_at": null,
+  "responded_at": null,
+  "resolved_at": null,
+  "escalation_count": 0,
+  "conversation_thread": []
+}

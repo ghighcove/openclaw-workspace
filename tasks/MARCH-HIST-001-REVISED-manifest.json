@@ -1,0 +1,443 @@
+{
+  "manifest_type": "coordinated_batch",
+  "manifest_version": "1.0",
+  "created_at": "2026-02-15T04:15:00Z",
+
+  "task_metadata": {
+    "task_id": "MARCH-HIST-001-REVISED",
+    "category": "CB",
+    "description": "Collect NCAA basketball historical data (2020-2025) via coordinated batch processing",
+    "coordinator": "billy",
+    "processor": "claude",
+    "priority": "high",
+    "estimated_duration": "4-6 hours (overnight processing)",
+    "deadline": "2026-02-16 06:00 AM"
+  },
+
+  "coordination_strategy": {
+    "batch_size": "1 season per batch",
+    "total_batches": 6,
+    "sequential_processing": true,
+    "parallel_processing": false,
+    "retry_on_failure": true,
+    "max_retries": 3,
+    "retry_delay": "10 minutes",
+    "stop_on_first_failure": false,
+    "reasoning": "Sequential processing ensures ESPN API rate limits aren't exceeded. Each season is independent and can be retried separately if needed."
+  },
+
+  "billy_responsibilities": {
+    "description": "Billy coordinates Claude's sequential processing of 6 NCAA seasons without doing heavy compute",
+    "tasks": [
+      "Create batch queue with 6 seasons (2020-2025)",
+      "Trigger Claude for season 2020, wait for completion signal",
+      "Verify season 2020 output file exists, sanity check row count",
+      "Trigger Claude for season 2021, repeat for all 6 seasons",
+      "Monitor completion signals every 5 minutes",
+      "Handle retries if ESPN API returns transient errors (503, 429)",
+      "Aggregate 6 season files into combined historical dataset",
+      "Run post-aggregation quality checks (no duplicates, all seasons present)",
+      "Create morning handoff summary with batch status table"
+    ],
+    "quota_budget": {
+      "estimated_prompts": "~9 prompts (1 setup + 6 triggers + 1 aggregation + 1 summary)",
+      "quota_impact": "LOW (<1% weekly quota)",
+      "classification": "QUOTA-SAFE",
+      "reasoning": "Billy only coordinates, doesn't call ESPN API or process data"
+    }
+  },
+
+  "claude_responsibilities": {
+    "description": "Claude processes each season batch when triggered by Billy (heavy compute, API calls)",
+    "tasks": [
+      "Read trigger file from Billy with season year and instructions",
+      "Fetch all NCAA games for that season from ESPN API (1 req/sec rate limit)",
+      "Parse box scores, team names, dates, scores",
+      "Save season data to Parquet file",
+      "Run quality checks (no missing data, reasonable row counts)",
+      "Write completion signal with status, row count, warnings"
+    ],
+    "per_batch_work": {
+      "estimated_duration": "30-60 minutes per season",
+      "api_calls": "500-1200 per season (one per game + team lookups)",
+      "output_size": "1-2 MB per season Parquet file"
+    }
+  },
+
+  "batch_specification": {
+    "batches": [
+      {
+        "batch_id": 1,
+        "description": "Season 2020 (COVID-shortened season)",
+        "instructions": "Collect all NCAA Division I men's basketball games for the 2020 season (Nov 2019 - Mar 2020) from ESPN API. Note: 2020 NCAA tournament was cancelled due to COVID-19, so tournament games will be 0. Regular season should have ~850 games.",
+        "data_sources": {
+          "primary": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard",
+          "fallback": "NCAA official stats API (if ESPN API unavailable)",
+          "rate_limit": "1 request per second (ESPN API limit)"
+        },
+        "expected_output": {
+          "file_path": "~/openclaw-workspace/results/season_2020.parquet",
+          "format": "parquet",
+          "expected_rows": "500-1000 (2020 was shortened)",
+          "expected_size": "1-2 MB",
+          "schema": {
+            "required_columns": ["game_id", "date", "home_team", "away_team", "home_score", "away_score", "season", "tournament_game"],
+            "schema_reference": "~/openclaw-workspace/projects/march_madness/docs/data_schema.md"
+          }
+        },
+        "quality_checks": [
+          {
+            "check": "Row count validation",
+            "rule": "500-1000 games (2020 was COVID-shortened)",
+            "action_if_fail": "Flag in completion signal if outside range, but continue"
+          },
+          {
+            "check": "No missing scores",
+            "rule": "All rows must have home_score and away_score (no nulls)",
+            "action_if_fail": "STOP if >5% rows have missing scores, escalate to blocker"
+          },
+          {
+            "check": "Date range validation",
+            "rule": "All dates must be between 2019-11-01 and 2020-03-31",
+            "action_if_fail": "Flag outlier dates in completion signal"
+          },
+          {
+            "check": "Tournament games validation",
+            "rule": "2020 tournament_game count should be 0 (cancelled)",
+            "action_if_fail": "Warning if >0 tournament games (expected 0 for 2020)"
+          }
+        ],
+        "trigger_file": "~/.signals/CLAUDE-BATCH-001.json",
+        "completion_signal": "~/.signals/CLAUDE-BATCH-001-complete.json"
+      },
+      {
+        "batch_id": 2,
+        "description": "Season 2021",
+        "instructions": "Collect all NCAA Division I men's basketball games for the 2021 season (Nov 2020 - Apr 2021) from ESPN API. 2021 tournament was held (68 teams, 67 games).",
+        "data_sources": {
+          "primary": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard",
+          "fallback": "NCAA official stats API",
+          "rate_limit": "1 request per second"
+        },
+        "expected_output": {
+          "file_path": "~/openclaw-workspace/results/season_2021.parquet",
+          "format": "parquet",
+          "expected_rows": "900-1200",
+          "expected_size": "1.5-2 MB",
+          "schema": {
+            "required_columns": ["game_id", "date", "home_team", "away_team", "home_score", "away_score", "season", "tournament_game"]
+          }
+        },
+        "quality_checks": [
+          {
+            "check": "Row count validation",
+            "rule": "900-1200 games expected",
+            "action_if_fail": "Flag if outside range"
+          },
+          {
+            "check": "No missing scores",
+            "rule": "All rows must have scores",
+            "action_if_fail": "STOP if >5% missing"
+          },
+          {
+            "check": "Tournament games validation",
+            "rule": "67 tournament games expected (2021 had full tournament)",
+            "action_if_fail": "Warning if not exactly 67 tournament games"
+          }
+        ],
+        "trigger_file": "~/.signals/CLAUDE-BATCH-002.json",
+        "completion_signal": "~/.signals/CLAUDE-BATCH-002-complete.json"
+      },
+      {
+        "batch_id": 3,
+        "description": "Season 2022",
+        "instructions": "Collect all NCAA Division I men's basketball games for the 2022 season (Nov 2021 - Apr 2022). Full tournament (67 games).",
+        "data_sources": {
+          "primary": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard",
+          "fallback": "NCAA official stats API",
+          "rate_limit": "1 request per second"
+        },
+        "expected_output": {
+          "file_path": "~/openclaw-workspace/results/season_2022.parquet",
+          "format": "parquet",
+          "expected_rows": "1000-1200",
+          "expected_size": "1.5-2 MB",
+          "schema": {
+            "required_columns": ["game_id", "date", "home_team", "away_team", "home_score", "away_score", "season", "tournament_game"]
+          }
+        },
+        "quality_checks": [
+          {
+            "check": "Row count validation",
+            "rule": "1000-1200 games expected",
+            "action_if_fail": "Flag if outside range"
+          },
+          {
+            "check": "Tournament games validation",
+            "rule": "67 tournament games expected",
+            "action_if_fail": "Warning if not 67"
+          }
+        ],
+        "trigger_file": "~/.signals/CLAUDE-BATCH-003.json",
+        "completion_signal": "~/.signals/CLAUDE-BATCH-003-complete.json"
+      },
+      {
+        "batch_id": 4,
+        "description": "Season 2023",
+        "instructions": "Collect all NCAA Division I men's basketball games for the 2023 season (Nov 2022 - Apr 2023). Full tournament (67 games).",
+        "data_sources": {
+          "primary": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard",
+          "fallback": "NCAA official stats API",
+          "rate_limit": "1 request per second"
+        },
+        "expected_output": {
+          "file_path": "~/openclaw-workspace/results/season_2023.parquet",
+          "format": "parquet",
+          "expected_rows": "1000-1200",
+          "expected_size": "1.5-2 MB",
+          "schema": {
+            "required_columns": ["game_id", "date", "home_team", "away_team", "home_score", "away_score", "season", "tournament_game"]
+          }
+        },
+        "quality_checks": [
+          {
+            "check": "Row count validation",
+            "rule": "1000-1200 games expected",
+            "action_if_fail": "Flag if outside range"
+          },
+          {
+            "check": "Tournament games validation",
+            "rule": "67 tournament games expected",
+            "action_if_fail": "Warning if not 67"
+          }
+        ],
+        "trigger_file": "~/.signals/CLAUDE-BATCH-004.json",
+        "completion_signal": "~/.signals/CLAUDE-BATCH-004-complete.json"
+      },
+      {
+        "batch_id": 5,
+        "description": "Season 2024",
+        "instructions": "Collect all NCAA Division I men's basketball games for the 2024 season (Nov 2023 - Apr 2024). Full tournament (67 games).",
+        "data_sources": {
+          "primary": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard",
+          "fallback": "NCAA official stats API",
+          "rate_limit": "1 request per second"
+        },
+        "expected_output": {
+          "file_path": "~/openclaw-workspace/results/season_2024.parquet",
+          "format": "parquet",
+          "expected_rows": "1000-1200",
+          "expected_size": "1.5-2 MB",
+          "schema": {
+            "required_columns": ["game_id", "date", "home_team", "away_team", "home_score", "away_score", "season", "tournament_game"]
+          }
+        },
+        "quality_checks": [
+          {
+            "check": "Row count validation",
+            "rule": "1000-1200 games expected",
+            "action_if_fail": "Flag if outside range"
+          },
+          {
+            "check": "Tournament games validation",
+            "rule": "67 tournament games expected",
+            "action_if_fail": "Warning if not 67"
+          }
+        ],
+        "trigger_file": "~/.signals/CLAUDE-BATCH-005.json",
+        "completion_signal": "~/.signals/CLAUDE-BATCH-005-complete.json"
+      },
+      {
+        "batch_id": 6,
+        "description": "Season 2025 (current season, partial)",
+        "instructions": "Collect all NCAA Division I men's basketball games for the 2025 season (Nov 2024 - Feb 2025 current). Season is in progress, so expect ~350 games (no tournament yet). This batch will have fewer games than other seasons.",
+        "data_sources": {
+          "primary": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard",
+          "fallback": "NCAA official stats API",
+          "rate_limit": "1 request per second"
+        },
+        "expected_output": {
+          "file_path": "~/openclaw-workspace/results/season_2025.parquet",
+          "format": "parquet",
+          "expected_rows": "300-500 (season in progress)",
+          "expected_size": "0.5-1 MB",
+          "schema": {
+            "required_columns": ["game_id", "date", "home_team", "away_team", "home_score", "away_score", "season", "tournament_game"]
+          }
+        },
+        "quality_checks": [
+          {
+            "check": "Row count validation",
+            "rule": "300-500 games expected (season in progress)",
+            "action_if_fail": "Flag if outside range"
+          },
+          {
+            "check": "Tournament games validation",
+            "rule": "0 tournament games expected (tournament is March 2025)",
+            "action_if_fail": "Warning if >0 tournament games"
+          },
+          {
+            "check": "Date range validation",
+            "rule": "All dates must be between 2024-11-01 and 2025-02-15",
+            "action_if_fail": "Flag outlier dates"
+          }
+        ],
+        "trigger_file": "~/.signals/CLAUDE-BATCH-006.json",
+        "completion_signal": "~/.signals/CLAUDE-BATCH-006-complete.json"
+      }
+    ]
+  },
+
+  "aggregation_specification": {
+    "description": "Combine 6 season Parquet files into single historical dataset (2020-2025)",
+    "method": "concatenate",
+    "script": "python ~/openclaw-workspace/scripts/aggregate_seasons.py",
+    "script_inline": "import pandas as pd\nfrom pathlib import Path\n\nresults_dir = Path('~/openclaw-workspace/results').expanduser()\nseason_files = sorted(results_dir.glob('season_*.parquet'))\n\nprint(f'Found {len(season_files)} season files')\ndfs = [pd.read_parquet(f) for f in season_files]\n\ncombined = pd.concat(dfs, ignore_index=True)\nprint(f'Combined: {len(combined)} games across {combined[\"season\"].nunique()} seasons')\n\ncombined.to_parquet(results_dir / 'historical_2020_2025_combined.parquet')\nprint('Saved to historical_2020_2025_combined.parquet')",
+    "input_pattern": "~/openclaw-workspace/results/season_*.parquet",
+    "output_file": "~/openclaw-workspace/results/historical_2020_2025_combined.parquet",
+    "post_aggregation_checks": [
+      {
+        "check": "No duplicate game IDs",
+        "rule": "combined['game_id'].duplicated().sum() == 0",
+        "action_if_fail": "STOP, escalate to blocker (data corruption)"
+      },
+      {
+        "check": "All 6 seasons represented",
+        "rule": "combined['season'].nunique() == 6 (2020, 2021, 2022, 2023, 2024, 2025)",
+        "action_if_fail": "Flag missing seasons in summary, accept partial if ≥4 seasons"
+      },
+      {
+        "check": "Total row count reasonable",
+        "rule": "Total games between 4000-6000 (accounting for 2020 COVID + 2025 partial)",
+        "action_if_fail": "Flag if outside range, but continue"
+      },
+      {
+        "check": "Schema consistency",
+        "rule": "All required columns present in combined dataset",
+        "action_if_fail": "STOP, escalate to blocker (schema mismatch)"
+      }
+    ]
+  },
+
+  "error_recovery": {
+    "transient_errors": {
+      "description": "ESPN API rate limits, temporary network issues, 503 errors",
+      "examples": [
+        "ESPN API 503 (service temporarily unavailable)",
+        "ESPN API 429 (rate limit exceeded)",
+        "Network timeout after 30 seconds",
+        "Connection refused (temporary network issue)"
+      ],
+      "retry_strategy": "Exponential backoff: 1 min, 5 min, 10 min (3 retries max)",
+      "max_retries": 3,
+      "action_after_max_retries": "If batch >50% complete, accept partial and flag in summary. If <50%, escalate to blocker."
+    },
+    "permanent_errors": {
+      "description": "Authentication failures, data source permanently unavailable, schema mismatches",
+      "examples": [
+        "ESPN API 401 (authentication failed)",
+        "ESPN API 404 (endpoint not found)",
+        "Schema mismatch (missing required columns)",
+        "Disk full (cannot write output file)"
+      ],
+      "retry_strategy": "No retry, immediate escalation",
+      "action": "Create URGENT_BLOCKER.md with error details, STOP all batches, await user decision"
+    },
+    "partial_completion": {
+      "description": "Batch completes with 50-99% of expected games",
+      "accept_threshold": "50%",
+      "action_if_above_threshold": "Accept partial batch, flag in summary with completion %, continue to next batch",
+      "action_if_below_threshold": "Reject partial batch, retry up to 3 times, escalate if still fails",
+      "example": "Season 2022 expected 1000-1200 games, got 650 games (54%) → accept partial, flag warning"
+    }
+  },
+
+  "completion_signal_format": {
+    "description": "Format for batch completion signals written by Claude after processing each season",
+    "file_path": "~/.signals/CLAUDE-BATCH-{ID}-complete.json",
+    "example": {
+      "batch_id": 1,
+      "status": "success",
+      "completion_time": "2026-02-15T01:35:22Z",
+      "output_file": "~/openclaw-workspace/results/season_2020.parquet",
+      "rows_processed": 850,
+      "quality_checks_passed": 3,
+      "quality_checks_failed": 0,
+      "warnings": ["2020 NCAA tournament cancelled (COVID-19) - 0 tournament games as expected"],
+      "errors": [],
+      "duration": 2100,
+      "api_calls_made": 920,
+      "retry_count": 0
+    }
+  },
+
+  "morning_handoff_format": {
+    "description": "Billy's morning summary for user/Claude after all batches complete",
+    "file_path": "~/openclaw-workspace/MORNING_SUMMARY.md",
+    "template": "See BILLY_BATCH_COORDINATOR_ROLE.md section 7 for complete template",
+    "completion_signal_path": "~/.signals/MARCH-HIST-001-REVISED-complete.json"
+  },
+
+  "verification_checklist": {
+    "description": "Steps for Claude to verify Billy's coordinated work in morning",
+    "automated_checks": [
+      "cat ~/.signals/MARCH-HIST-001-REVISED-complete.json",
+      "python ~/openclaw-workspace/scripts/verify_billy_output.py MARCH-HIST-001-REVISED ~/openclaw-workspace/results/historical_2020_2025_combined.parquet",
+      "ls -lh ~/openclaw-workspace/results/historical_2020_2025_combined.parquet"
+    ],
+    "manual_spot_checks": [
+      "Randomly select 10 games from combined dataset",
+      "Verify game dates are within expected ranges for each season",
+      "Cross-reference 2-3 games with ESPN.com box scores",
+      "Check that 2020 has 0 tournament games, 2021-2024 have ~67 each"
+    ],
+    "decision_matrix": {
+      "all_pass": "Sync to Windows (bash scripts/sync_project_out.sh march_madness), proceed to merge with current season data",
+      "automated_pass_manual_fail": "Investigate discrepancies, decide if re-collection needed",
+      "automated_fail": "Review failure details in completion signal, decide fix or re-delegate"
+    }
+  },
+
+  "reference_documents": {
+    "batch_coordinator_role": "G:/ai/big_team_effort/BILLY_BATCH_COORDINATOR_ROLE.md",
+    "coordinated_batch_template": "G:/ai/big_team_effort/templates/COORDINATED_BATCH_TEMPLATE.json",
+    "standing_orders": "G:/ai/openclaw-project/workspace/STANDING_ORDERS.md",
+    "morning_handoff_checklist": "G:/ai/openclaw-project/workspace/MORNING_HANDOFF_CHECKLIST.md",
+    "data_schema": "~/openclaw-workspace/projects/march_madness/docs/data_schema.md",
+    "sync_script": "~/openclaw-workspace/scripts/sync_project_out.sh"
+  },
+
+  "delegation_instructions": {
+    "description": "How to delegate this task to Billy",
+    "steps": [
+      "1. Sync manifest to Billy workspace: cp MARCH-HIST-001-REVISED-manifest.json ~/openclaw-workspace/tasks/",
+      "2. Write to CLAUDE_INBOX.md: 'TASK MARCH-HIST-001-REVISED ready. Coordinated batch processing (6 seasons). See manifest.'",
+      "3. Send Telegram alert via /message-billy skill: 'TASK MARCH-HIST-001-REVISED ready. Coordinated batch (not massive crunch). Check manifest.'",
+      "4. Billy reads manifest, creates batch queue, starts coordination overnight",
+      "5. Claude polls for trigger files when resuming work, processes each batch",
+      "6. User wakes up to MORNING_SUMMARY.md with completion status"
+    ]
+  },
+
+  "success_criteria": {
+    "billy_coordination": "Billy uses <10 prompts (quota-safe coordination)",
+    "claude_processing": "Claude processes all 6 batches (or flags failures properly)",
+    "data_quality": "Combined dataset has 4000-6000 games, no duplicates, all required columns",
+    "morning_handoff": "User wakes up to completed work OR clear blocker escalation",
+    "time_savings": "User gains 4-6 hours (work happens overnight vs morning manual collection)"
+  },
+
+  "pilot_objectives": {
+    "description": "MARCH-HIST-001-REVISED is pilot for coordinated batch processing pattern",
+    "objectives": [
+      "Validate that Billy can coordinate 6-batch job with <10 prompts (quota-safe)",
+      "Test trigger file → Claude processing → completion signal workflow",
+      "Verify error recovery (transient retries, permanent escalation)",
+      "Measure end-to-end duration (should be 4-6 hours overnight)",
+      "Validate morning handoff summary quality (actionable next steps for Claude)",
+      "Prove overnight batch processing value (user wakes up to completed work)"
+    ],
+    "if_successful": "Use coordinated batch pattern for: NFL-POS-BATCH (8 positions), March Madness backtesting (30 model configs), weekly model retraining",
+    "if_fails": "Document failure mode in BLOCKERS.md, fall back to Claude serial processing"
+  }
+}

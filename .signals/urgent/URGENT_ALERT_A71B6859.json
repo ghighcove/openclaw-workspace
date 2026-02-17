@@ -1,0 +1,25 @@
+{
+  "alert_id": "A71B6859",
+  "priority": "HIGH",
+  "category": "clarification",
+  "subject": "Test Alert System",
+  "message": "This is a test alert to verify end-to-end functionality.",
+  "requires_response": true,
+  "deadline": "2026-02-16T14:57:55.410840",
+  "deadline_minutes": 60,
+  "conversation_id": "A71B6859",
+  "status": "resolved",
+  "created_at": "2026-02-16T13:57:55.410840",
+  "acknowledged_at": null,
+  "responded_at": null,
+  "resolved_at": "2026-02-16T13:57:57.893039",
+  "escalation_count": 0,
+  "conversation_thread": [
+    {
+      "timestamp": "2026-02-16T13:57:57.883067",
+      "speaker": "claude",
+      "message": "Waiting for user response"
+    }
+  ],
+  "resolution_note": "Test completed successfully"
+}
