@@ -5,8 +5,8 @@
 $ErrorActionPreference = "Stop"
 
 # Configuration
-$WORKSPACE = "G:/ai/openclaw-workspace"
-$PYTHON_SCRIPT = "G:/ai/git-status-all.py"
+$WORKSPACE = $PSScriptRoot | Split-Path -Parent
+$PYTHON_SCRIPT = Join-Path (Split-Path $WORKSPACE -Parent) "git-status-all.py"
 $SIGNAL_DIR = "$WORKSPACE/.signals"
 $TEMPLATE_DIR = "$WORKSPACE/templates"
 $MORNING_SUMMARY_FILE = "$SIGNAL_DIR/morning_summary.md"
@@ -173,7 +173,7 @@ $summary += @"
 $actionItems = @()
 
 if ($uncommittedProjects -gt 0) {
-    $actionItems += "- [ ] Review $($uncommittedProjects) project(s) with uncommitted changes (run \`python G:/ai/git-status-all.py --dirty\` for details)"
+    $actionItems += "- [ ] Review $($uncommittedProjects) project(s) with uncommitted changes (run git-status-all.py --dirty for details)"
 }
 
 if ($unpushedProjects -gt 0) {

@@ -6,3 +6,9 @@ __pycache__/
 
 # Session context
 tasks/context.md
+
+# Project-specific task manifests and coordination docs with machine paths
+docs/
+tasks/
+projects/
+scripts/

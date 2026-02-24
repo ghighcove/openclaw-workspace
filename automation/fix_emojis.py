@@ -2,7 +2,8 @@
 
 import re
 
-file_path = "G:/ai/openclaw-workspace/automation/march_historical_collector.py"
+import os
+file_path = os.path.join(os.path.dirname(__file__), "march_historical_collector.py")
 
 # Read file
 with open(file_path, 'r', encoding='utf-8') as f:

@@ -5,9 +5,9 @@ $ErrorActionPreference = "Stop"
 
 # Configuration
 $TASK_NAME = "Billy-GitStatusMonitor"
-$WORKSPACE = "G:/ai/openclaw-workspace"
-$MONITOR_SCRIPT = "$WORKSPACE/automation/git_status_monitor.ps1"
-$LOG_FILE = "$WORKSPACE/.signals/task_scheduler_log.txt"
+$WORKSPACE = $PSScriptRoot | Split-Path -Parent
+$MONITOR_SCRIPT = Join-Path $WORKSPACE "automation\git_status_monitor.ps1"
+$LOG_FILE = Join-Path $WORKSPACE ".signals\task_scheduler_log.txt"
 $USER_HOME = $env:USERPROFILE
 
 # Function to write to log
