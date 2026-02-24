@@ -1,0 +1,8 @@
+# Runtime state - machine-specific
+.signals/
+.heartbeat/
+__pycache__/
+*.pyc
+
+# Session context
+tasks/context.md

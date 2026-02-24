@@ -12,8 +12,8 @@ from datetime import datetime
 
 class BillyWrapper:
     def __init__(self):
-        self.workspace = Path("G:/ai/openclaw-workspace")
-        self.inbox = Path("G:/ai/openclaw-project/workspace/CLAUDE_INBOX.md")
+        self.workspace = Path(__file__).parent.resolve()
+        self.inbox = self.workspace.parent / "openclaw-project" / "workspace" / "CLAUDE_INBOX.md"
         self.signals = self.workspace / ".signals"
         self.heartbeat = self.workspace / ".heartbeat"
 

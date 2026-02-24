@@ -4,8 +4,8 @@
 
 set -e  # Exit on any error
 
-WORKSPACE="G:/ai/openclaw-workspace"
-INBOX="G:/ai/openclaw-project/workspace/CLAUDE_INBOX.md"
+WORKSPACE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+INBOX="$(dirname "$WORKSPACE")/openclaw-project/workspace/CLAUDE_INBOX.md"
 SIGNALS="$WORKSPACE/.signals"
 HEARTBEAT="$WORKSPACE/.heartbeat"
 
